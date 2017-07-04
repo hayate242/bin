@@ -1,0 +1,3 @@
+nakayama,居酒屋,1000,
+nakayama,eye,1200,
+kodama,コンビニ,700,

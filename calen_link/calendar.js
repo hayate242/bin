@@ -63,7 +63,8 @@ function linkGo(MM,DD){
 		newWin1.focus();
 
 	}else if(actObj == 3){
-		newWin2 = window.open('http://' + urlObj, 'newWin', 'width=' + winWW + ', height=' + winHH + ', menubar=yes, toolbar=yes, scrollbars=' + winSCL + '');
+		// newWin2 = window.open('http://' + urlObj, 'newWin', 'width=' + winWW + ', height=' + winHH + ', menubar=yes, toolbar=yes, scrollbars=' + winSCL + '');
+		newWin2 = window.open('http://' + urlObj,'subwin','width=300,height=300');
 		newWin2.focus();
 	}
 }

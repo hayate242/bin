@@ -5,7 +5,7 @@
 
 
 <body bgcolor onLoad="put_Jobs()">
-	<form name="input_data" method="post" action="./">
+	<form name="input_data" method="post" action="">
 		<font size="5">シフト登録</font>
 
 		<p><!--選択肢その1-->
@@ -184,7 +184,7 @@
 			console.log(url);
 
 
-			window.open( url, '_blank' );
+			window.location.href = url;
 
 
 			// 読み込み

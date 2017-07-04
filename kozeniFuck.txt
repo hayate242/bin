@@ -1,0 +1,59 @@
+ 	var username;
+	var jobName = [];
+  var wage = [];
+/* オンロード時に実行 */
+    window.onload=getdata();
+		window.onload=functionName();
+
+
+			function getdata(){
+        if(window.location.search){
+            /* URLの「?」以降のパラメータを変数nに代入 */
+            var n=window.location.search.substring(1,window.location.search.length);
+				
+				console.log(n);
+            /* テキストボックスにパラメータを表示 */
+          // document.form3.elements["getpram"].value=n;
+							username = n.replace("name=","");
+							document.getElementById("out").innerHTML = "aaaaaaa";
+							loadWorkHistory("work_history.txt");
+        }
+    }
+    
+       
+      function loadWorkHistory(fileName){
+					var cnt = 0;
+
+          httpObj = new XMLHttpRequest();
+          httpObj.open('GET',fileName+"?"+(new Date()).getTime(),true);
+          // ?以降はキャッシュされたファイルではなく、毎回読み込むためのもの
+          httpObj.send(null);
+          httpObj.onreadystatechange = function(){
+              if ( (httpObj.readyState == 4) && (httpObj.status == 200) ){
+                  paths = httpObj.responseText.split(",");
+				
+      	    var out = "";
+      	    for (n = 0; n < paths.length; n++) {
+								paths[n] = paths[n].replace(/\r?\n/g,"");
+								paths[n] = paths[n].replace(" ","");
+							//ユーザ名と等しいならデータ追加
+							if(paths[n] == username){
+								console.log("おなじ！！！");
+								jobName[cnt] = paths[n+1];
+								date[cnt] = paths[n+2].replace("/","<");
+								date[cnt] = date[cnt].replace("/",">");
+								wage[cnt] = Number(paths[n+3]);
+								//console.log(typeof wage[cnt]);
+
+								out += wage[cnt] ;
+								//console.log(jobName[cnt]);
+								//console.log(date[cnt]);
+								//console.log(wage[cnt]);
+								n += 3;
+								cnt++;
+							}
+      				//out +=  paths[n] + "\n";
+      				//document.write(paths[n]+'<br>');
+      	    }
+
+    }

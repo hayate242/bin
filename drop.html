@@ -1,32 +1,42 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ja">
-<meta charset="utf-8"> 
+<meta charset="utf-8">
 <title>シフト登録</title>
 
 
-<body bgcolor onLoad="functionName()">
-	<form name="formName" method="post" action="./pathToProgramFile">
+<body bgcolor onLoad="put_Jobs()">
+	<form name="input_data" method="post" action="">
 		<font size="5">シフト登録</font>
 
 		<p><!--選択肢その1-->
 		<b> 勤務先：</b>
-		<select name = "selectName1" onChange="functionName()">
-		<option value = "居酒屋">居酒屋</option>
-		<option value = "カラオケ">カラオケ</option>
-		<option value = "家庭教師">家庭教師</option>
+		<select id="jobName">
+
 		</select></p>
 
-		<p><!--選択肢その2（選択肢その1の項目によって変化）-->
+
+<!--	選択肢その2（選択肢その1の項目によって変化）-->
+		<!-- <p>
 		<b> 時給：</b>
 		<select name = "selectName2">
-		</select></p>
+		</select></p> -->
 
-		<td align="right"><b> 時間：</b></td>
-		<td><input type="text" name="name" size="30" maxlength="20"></td>
-		</p>
+		<div>
+			<b> 時給：</b>
+			<select id="wage">
+	     <!-- <option value="">時給</option>  -->
+			</select>
+		</div>
+
+		<div>
+			<b> 時間：</b>
+			<select id="hour">
+	     <!-- <option value="">時給</option>  -->
+			</select>
+		</div>
 
 		<button type="button" name="aaa" value="aaa">
-		<font size="5" color="#333399">登録</font>
+		<font size="5" color="#333399" onclick="save_work_history();">登録</font>
 		</button>
 	</form>
 <input type="button" value="閉じる" onclick="self.close();" onkeypress="self.close();">
@@ -37,58 +47,225 @@
 <script type = "text/javascript">
 	var username;
 	var date;
-	window.onload=getdata();
+	var jobName = [];
+	var hourly_wage = [];
+
+	getdata();
 
 	function getdata(){
         if(window.location.search){
             /* URLの「?」以降のパラメータを変数nに代入 */
             var n=window.location.search.substring(1,window.location.search.length);
-				
+
 				console.log(n);
 						var param = n.split('&');
 						username = param[0].replace("name=","");
 						console.log(username);
 						date = param[1].replace("date=","");
 						console.log(date);
-       
-						
+
+
 
 							//document.getElementById("out").innerHTML = "aaaaaaa";
-							loadWorkHistory("work_history.txt");
+							loadRegistared("registared_baito.txt");
         }
     }
 
-function functionName()
-    {
-        var select1 = document.forms.formName.selectName1; //変数select1を宣言
-        var select2 = document.forms.formName.selectName2; //変数select2を宣言
+		function loadRegistared(fileName){
+				var cnt = 0;
 
-        select2.options.length = 0; // 選択肢の数がそれぞれに異なる場合、これが重要
-         
-        if (select1.options[select1.selectedIndex].value == "居酒屋")
-            {
-                select2.options[0] = new Option("(平日)900円");
-                select2.options[1] = new Option("(休祝日)1000円");
-            }
-         
-        else if (select1.options[select1.selectedIndex].value == "カラオケ")
-            {
-                select2.options[0] = new Option("(平日)800円");
-                select2.options[1] = new Option("(休祝日)900円");
-            }
-         
-        else if (select1.options[select1.selectedIndex].value == "家庭教師")
-            {
-                select2.options[0] = new Option("(平日)1000円");
-                select2.options[1] = new Option("(休祝日)1200円");
-            }
-    }
+				httpObj = new XMLHttpRequest();
+				httpObj.open('GET',fileName+"?"+(new Date()).getTime(),true);
+				// ?以降はキャッシュされたファイルではなく、毎回読み込むためのもの
+				httpObj.send(null);
+				httpObj.onreadystatechange = function(){
+					if ( (httpObj.readyState == 4) && (httpObj.status == 200) ){
+
+						paths = httpObj.responseText.split(",");
+						console.log(paths);
+
+						var out = "";
+						for (n = 0; n < paths.length; n++) {
+							paths[n] = paths[n].replace(/\r?\n/g,"");
+							paths[n] = paths[n].replace(" ","");
+							// ユーザ名と等しいならデータ追加
+							if(paths[n] == username){
+								console.log("おなじ！！！");
+								jobName[cnt] = paths[n+1];
+								hourly_wage[cnt] = Number(paths[n+2]);
+								//console.log(typeof wage[cnt]);
 
 
+								// console.log(jobName[cnt]);
+
+								// console.log(hourly_wage[cnt]);
+								n += 2;
+								cnt++;
+							}
+							out +=  paths[n] + "\n";
+
+						}
+
+
+
+						put_Jobs();
+						document.getElementById("str").innerHTML = "test";
+					}
+				}
+
+
+
+		}
+
+		function put_Jobs(){
+
+
+			// var hourly_wage = [100,200,300];
+			console.log("putJob!!");
+			// console.log("hourly_wage.length "+hourly_wage.length);
+
+			for ( var i= 0; i < jobName.length; i++ ) {
+				var select = document.getElementById('jobName');
+				// console.log("jobName "+jobName);
+			    var option = document.createElement('option');
+
+			    option.setAttribute('value',jobName[i]);
+			    option.innerHTML = jobName[i];
+
+			    select.appendChild(option);
+			}
+
+			for ( var i= 0; i < hourly_wage.length; i++ ) {
+				var select = document.getElementById('wage');
+				// console.log("hourly_wage "+hourly_wage);
+			    var option = document.createElement('option');
+
+			    option.setAttribute('value', hourly_wage[i]);
+			    option.innerHTML = hourly_wage[i]+"円";
+
+			    select.appendChild(option);
+			}
+
+			for(var i=1; i <= 24; i++){
+				var select = document.getElementById('hour');
+				// console.log("hourly_wage "+hourly_wage);
+			    var option = document.createElement('option');
+
+			    option.setAttribute('value', i);
+			    option.innerHTML = i+"時間";
+
+			    select.appendChild(option);
+			}
+		}
+
+		function save_work_history(){
+
+			var select1 = document.forms.input_data.jobName; //変数select1を宣言
+      var select2 = document.forms.input_data.wage; //変数select2を宣言
+			var select3 = document.forms.input_data.hour;
+      // select2.options.length = 0; // 選択肢の数がそれぞれに異なる場合、これが重要
+			var selected_job = select1.options[select1.selectedIndex].value;
+			var selected_wage = select2.options[select2.selectedIndex].value;
+			var selected_hour = select3.options[select3.selectedIndex].value;
+
+			console.log(select1.options[select1.selectedIndex].value);
+
+			console.log(select2.options[select2.selectedIndex].value);
+			console.log(selected_hour);
+
+			var money = Number(selected_wage)*Number(selected_hour);
+			console.log(money);
+
+			// var formData = new FormData();
+			// formData.append(username, money, "work_history.txt");
+			var url = "save_work_history.cgi?";
+      url += "name="+username+"&jobName="+selected_job+"&date="+date+"&money="+money;
+
+			console.log(url);
+
+
+			window.location.href = url;
+
+
+			// 読み込み
+			// var fs    = new ActiveXObject("Scripting.FileSystemObject");
+			// var file2 = fs.OpenTextFile("work_history.txt", 1);
+			// var str = file2.ReadLine();
+			// console.log(str);
+			// file2.Close();
+
+	    // var fs  = new ActiveXObject("Scripting.FileSystemObject");
+	    // var outf = fs.CreateTextFile("calc.txt", true);
+	    // outf.Write("test￥n");
+	    // outf.Close();
+
+
+
+			// var filename = "work_history.txt";
+			// var content = money;
+	    // // chrome以外は弾く
+	    // var ua = navigator.userAgent.toLowerCase();
+	    // if (ua.indexOf('chrome') == -1) {
+	    //     alert("This Page is Google Chrome only!");
+	    // }
+			//
+	    // function errorCallback(e) {
+	    //     alert("Error: " + e.name);
+	    // }
+			//
+	    // function fsCallback(fs) {
+	    //     fs.root.getFile(filename, {create: true}, function(fileEntry) {
+	    //         fileEntry.createWriter(function(fileWriter) {
+			//
+	    //             fileWriter.onwriteend = function(e) {
+	    //                 alert("Success! : " + fileEntry.fullPath);
+	    //             };
+			//
+	    //             fileWriter.onerror = function(e) {
+	    //                 alert("Failed: " + e);
+	    //             };
+			//
+	    //             var output = new Blob([content], {type: "text/plain"});
+	    //             fileWriter.write(output);
+	    //         }, errorCallback);
+	    //     }, errorCallback);
+	    // }
+	    // // クオータを要求する。PERSISTENTでなくTEMPORARYの場合は
+	    // // 直接 webkitRequestFileSystem を呼んでよい
+	    // webkitStorageInfo.requestQuota(PERSISTENT, 1024,
+	    //     webkitRequestFileSystem(PERSISTENT, 1024, fsCallback, errorCallback),
+	    // errorCallback);
+
+		}
+
+	// function functionName()
+	//     {
+	//         var select1 = document.forms.formName.selectName1; //変数select1を宣言
+	//         var select2 = document.forms.formName.selectName2; //変数select2を宣言
+	//
+	//         select2.options.length = 0; // 選択肢の数がそれぞれに異なる場合、これが重要
+	//
+	//         if (select1.options[select1.selectedIndex].value == "居酒屋")
+	//             {
+	//                 select2.options[0] = new Option("(平日)900円");
+	//                 select2.options[1] = new Option("(休祝日)1000円");
+	//             }
+	//
+	//         else if (select1.options[select1.selectedIndex].value == "カラオケ")
+	//             {
+	//                 select2.options[0] = new Option("(平日)800円");
+	//                 select2.options[1] = new Option("(休祝日)900円");
+	//             }
+	//
+	//         else if (select1.options[select1.selectedIndex].value == "家庭教師")
+	//             {
+	//                 select2.options[0] = new Option("(平日)1000円");
+	//                 select2.options[1] = new Option("(休祝日)1200円");
+	//             }
+	//     }
 </script>
 
-
 </body>
- 
+
 
 </html>
